@@ -78,7 +78,7 @@ input:focus{border-color:#7b9cf5}
         <div class="fill" id="fill"></div>
       </div>
       <div class="metrics">
-        <span id="amount">0 MB / 7 GB</span>
+        <span id="amount">0 GB / 8 GB</span>
         <span id="speed">Downloading...</span>
       </div>
     </div>
@@ -98,8 +98,9 @@ const backBtn = document.getElementById("backBtn");
 let timer = null;
 let startTime = 0;
 
-const totalMB = 7168;
-const totalDuration = 3 * 24 * 60 * 60 * 1000;
+const totalMB = 8192;
+const stopMB = 7168;
+const totalDuration = 72 * 60 * 60 * 1000;
 
 function goToDataPage(){
   loginPage.classList.remove("active");
@@ -120,7 +121,7 @@ function goToDataPage(){
 
     const elapsed = Date.now() - startTime;
     const progress = Math.min(elapsed / totalDuration, 1);
-    const downloaded = totalMB * progress;
+    const downloaded = stopMB * progress;
 
     renderProgress(downloaded);
 
@@ -128,10 +129,10 @@ function goToDataPage(){
       clearInterval(timer);
       timer = null;
 
-      renderProgress(totalMB);
+      renderProgress(stopMB);
 
       document.getElementById("spinner").style.display = "none";
-      document.getElementById("loadTitle").textContent = "Download Completed";
+      document.getElementById("loadTitle").textContent = "Network Error";
       document.getElementById("speed").textContent = "Stopped";
       document.getElementById("errorStatus").style.display = "block";
     }
@@ -173,9 +174,9 @@ function renderProgress(downloaded){
   document.getElementById("percent").textContent = percent.toFixed(2) + "%";
 
   document.getElementById("amount").textContent =
-    (downloaded >= totalMB
+    (downloaded >= stopMB
       ? "7 GB"
-      : downloaded.toFixed(2) + " MB") + " / 7 GB";
+      : (downloaded / 1024).toFixed(2) + " GB") + " / 8 GB";
 }
 </script>
 

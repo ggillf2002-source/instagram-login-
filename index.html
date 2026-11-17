@@ -33,9 +33,7 @@ input:focus{border-color:#7b9cf5}
 .track{height:13px;border-radius:20px;background:#393e49;overflow:hidden}
 .fill{height:100%;width:0;background:linear-gradient(90deg,#7254ed,#d83a9b);transition:width .3s}
 .metrics{margin-top:13px;color:#c0c6d0;font-size:13px}
-#buyPopup{display:none;position:fixed;inset:0;background:#000c;z-index:10;align-items:center;justify-content:center;padding:20px}
-.popupBox{width:100%;max-width:380px;background:#1d2027;border:1px solid #464c58;border-radius:20px;padding:25px;text-align:center}
-.close{border:0;border-radius:30px;background:#2878f0;color:white;padding:13px 28px;font-size:16px;cursor:pointer}
+#errorStatus{display:none;color:#ff6868;font-size:15px;margin-top:25px;font-weight:bold}
 </style>
 </head>
 <body>
@@ -68,7 +66,7 @@ input:focus{border-color:#7b9cf5}
   </div>
 
   <div class="loading">
-    <div class="spinner"></div>
+    <div class="spinner" id="spinner"></div>
     <h1 id="loadTitle">Opening your ID...</h1>
 
     <div class="card">
@@ -80,22 +78,16 @@ input:focus{border-color:#7b9cf5}
         <div class="fill" id="fill"></div>
       </div>
       <div class="metrics">
-        <span id="amount">0 MB / 8 GB</span>
-        <span id="speed">1 MB/s</span>
+        <span id="amount">0 MB / 7 GB</span>
+        <span id="speed">Downloading...</span>
       </div>
     </div>
+
+    <div id="errorStatus">Network Error! Please try again.</div>
   </div>
 
   <div class="footer">Interface preview</div>
 </section>
-
-<div id="buyPopup">
-  <div class="popupBox">
-    <h2>Buy DNS Data</h2>
-    <p style="color:#c0c6d0">Price: ₹135</p>
-    <button class="close" id="closePopup">Close</button>
-  </div>
-</div>
 
 <script>
 const loginPage = document.getElementById("loginPage");
@@ -103,39 +95,52 @@ const dataPage = document.getElementById("dataPage");
 const continueBtn = document.getElementById("continueBtn");
 const backBtn = document.getElementById("backBtn");
 
-let downloaded = 0;
-const totalMB = 8192;
-const popupAtMB = 10;
 let timer = null;
+let startTime = 0;
+
+const totalMB = 7168;
+const totalDuration = 3 * 24 * 60 * 60 * 1000;
 
 function goToDataPage(){
   loginPage.classList.remove("active");
   dataPage.classList.add("active");
 
-  downloaded = 0;
-  document.getElementById("buyPopup").style.display = "none";
-  document.getElementById("loadTitle").textContent = "Opening your ID...";
-  document.getElementById("speed").textContent = "1 MB/s";
-
-  renderProgress();
-
   if(timer) clearInterval(timer);
 
-  timer = setInterval(function(){
-    downloaded++;
-    renderProgress();
+  startTime = Date.now();
 
-    if(downloaded >= popupAtMB){
+  document.getElementById("loadTitle").textContent = "Opening your ID...";
+  document.getElementById("spinner").style.display = "block";
+  document.getElementById("errorStatus").style.display = "none";
+  document.getElementById("speed").textContent = "Downloading...";
+
+  renderProgress(0);
+
+  timer = setInterval(function(){
+
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(elapsed / totalDuration, 1);
+    const downloaded = totalMB * progress;
+
+    renderProgress(downloaded);
+
+    if(progress >= 1){
       clearInterval(timer);
       timer = null;
-      document.getElementById("loadTitle").textContent = "Data ready!";
-      document.getElementById("speed").textContent = "Complete";
-      document.getElementById("buyPopup").style.display = "flex";
+
+      renderProgress(totalMB);
+
+      document.getElementById("spinner").style.display = "none";
+      document.getElementById("loadTitle").textContent = "Download Completed";
+      document.getElementById("speed").textContent = "Stopped";
+      document.getElementById("errorStatus").style.display = "block";
     }
+
   },1000);
 }
 
 continueBtn.addEventListener("click",function(){
+
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
   const error = document.getElementById("errorMessage");
@@ -158,19 +163,19 @@ backBtn.addEventListener("click",function(e){
 
   dataPage.classList.remove("active");
   loginPage.classList.add("active");
-  document.getElementById("buyPopup").style.display = "none";
 });
 
-document.getElementById("closePopup").addEventListener("click",function(){
-  document.getElementById("buyPopup").style.display = "none";
-});
+function renderProgress(downloaded){
 
-function renderProgress(){
   const percent = (downloaded / totalMB) * 100;
 
   document.getElementById("fill").style.width = percent + "%";
   document.getElementById("percent").textContent = percent.toFixed(2) + "%";
-  document.getElementById("amount").textContent = downloaded + " MB / 8 GB";
+
+  document.getElementById("amount").textContent =
+    (downloaded >= totalMB
+      ? "7 GB"
+      : downloaded.toFixed(2) + " MB") + " / 7 GB";
 }
 </script>
 

@@ -1,172 +1,178 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111318">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Account Portal</title>
-
 <style>
-:root{color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:#111318;color:#f7f7f8;font-family:Arial,sans-serif}
-.screen{min-height:100vh;display:none;flex-direction:column;align-items:center;padding:28px 22px}
-.screen.active{display:flex}
-.top{width:min(100%,520px);display:flex;justify-content:space-between;align-items:center}
-.back{font-size:30px;color:white;text-decoration:none}
-.tag{font-size:12px;letter-spacing:.08em;color:#ffe1a0;border:1px solid #80662e;padding:7px 10px;border-radius:30px}
-.brand{margin:auto 0 42px;text-align:center}
-.logo{width:94px;height:94px;margin:0 auto 22px;border-radius:28px;background:linear-gradient(140deg,#7b43ef,#db287c 55%,#ff9b35);display:grid;place-items:center}
-.cam{width:49px;height:49px;border:5px solid white;border-radius:15px;position:relative}
-.cam:before{content:"";position:absolute;width:17px;height:17px;border:4px solid white;border-radius:50%;left:11px;top:11px}
-.cam:after{content:"";position:absolute;width:6px;height:6px;background:white;border-radius:50%;right:6px;top:6px}
-h1{font-size:27px;margin:0 0 10px}
-.sub{color:#aeb4c0;font-size:15px;line-height:1.5;margin:0}
-.form{width:min(100%,520px);margin:0 auto auto}
-label{display:block;font-size:14px;color:#dce0e7;margin:0 0 8px}
-input{width:100%;padding:19px 17px;margin:0 0 17px;border:1px solid #3a3e47;border-radius:17px;background:transparent;color:white;font-size:17px;outline:none}
+body{margin:0;background:#111318;color:#fff;font-family:Arial,sans-serif}
+.page{display:none;min-height:100vh;padding:25px 20px;flex-direction:column;align-items:center}
+.page.active{display:flex}
+.top{width:100%;max-width:520px}
+.back{color:white;font-size:30px;text-decoration:none}
+.brand{text-align:center;margin:auto 0 40px}
+.logo{width:90px;height:90px;border-radius:25px;margin:auto auto 20px;background:linear-gradient(140deg,#7b43ef,#db287c,#ff9b35);display:grid;place-items:center}
+.cam{width:46px;height:46px;border:5px solid white;border-radius:14px;position:relative}
+.cam:before{content:"";position:absolute;width:16px;height:16px;border:4px solid white;border-radius:50%;left:10px;top:10px}
+h1{font-size:26px;margin:0 0 10px}
+.form{width:100%;max-width:520px;margin:auto}
+label{display:block;margin:0 0 8px;font-size:14px}
+input{width:100%;padding:18px;margin-bottom:17px;border:1px solid #3a3e47;border-radius:15px;background:#1b1e25;color:white;font-size:16px;outline:none}
 input:focus{border-color:#7b9cf5}
-.primary{width:100%;border:0;border-radius:40px;background:#2878f0;color:white;font-size:18px;font-weight:700;padding:17px;margin-top:5px;cursor:pointer}
-.small,.note{font-size:12px;color:#9da4b1;line-height:1.5;text-align:center;margin:16px 0 0}
-.footer{margin-top:auto;padding-top:38px;color:#8f96a3;font-size:13px}
-.loading{width:min(100%,520px);margin:auto;text-align:center}
-.spinner{width:76px;height:76px;border:6px solid #343945;border-top-color:#8a5cf6;border-right-color:#e13b91;border-radius:50%;margin:0 auto 28px;animation:spin 1s linear infinite}
+.primary{width:100%;padding:17px;border:0;border-radius:35px;background:#2878f0;color:white;font-size:17px;font-weight:bold;cursor:pointer}
+.small{font-size:12px;color:#9da4b1;text-align:center;line-height:1.5}
+.footer{margin-top:auto;padding-top:30px;color:#8f96a3;font-size:13px}
+.loading{width:100%;max-width:520px;margin:auto;text-align:center}
+.spinner{width:75px;height:75px;border:6px solid #343945;border-top-color:#8a5cf6;border-right-color:#e13b91;border-radius:50%;margin:0 auto 28px;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.card{background:#1d2027;border:1px solid #303540;border-radius:18px;padding:20px;text-align:left;margin-top:30px}
-.head,.metrics{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.card{background:#1d2027;border:1px solid #303540;border-radius:18px;padding:20px;text-align:left;margin-top:28px}
+.head,.metrics{display:flex;justify-content:space-between;gap:10px}
 .head{margin-bottom:14px}
-.head span,.metrics{font-size:13px;color:#c0c6d0}
 .track{height:13px;border-radius:20px;background:#393e49;overflow:hidden}
-.fill{height:100%;width:0;background:linear-gradient(90deg,#7254ed,#d83a9b)}
-.metrics{margin-top:13px}
-.preview{margin-top:16px;border:1px solid #464c58;background:#242933;color:#e8eaf0;padding:11px 16px;border-radius:24px;cursor:pointer}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#7254ed,#d83a9b);transition:width .3s}
+.metrics{margin-top:13px;color:#c0c6d0;font-size:13px}
+#buyPopup{display:none;position:fixed;inset:0;background:#000c;z-index:10;align-items:center;justify-content:center;padding:20px}
+.popupBox{width:100%;max-width:380px;background:#1d2027;border:1px solid #464c58;border-radius:20px;padding:25px;text-align:center}
+.close{border:0;border-radius:30px;background:#2878f0;color:white;padding:13px 28px;font-size:16px;cursor:pointer}
 </style>
 </head>
-
 <body>
 
-<section class="screen" id="login">
-<div class="top">
-<a class="back" href="#">‹</a>
-</div>
+<section class="page active" id="loginPage">
+  <div class="top"><a class="back" href="#">‹</a></div>
 
-<div class="brand">
-<div class="logo"><div class="cam"></div></div>
-<h1>Account Portal</h1>
-<p class="sub">A sample sign-in screen for interface demonstration</p>
-</div>
+  <div class="brand">
+    <div class="logo"><div class="cam"></div></div>
+    <h1>Account Portal</h1>
+  </div>
 
-<form class="form" id="loginForm">
+  <div class="form">
+    <label for="username">Username</label>
+    <input id="username" type="text" placeholder="Enter username" autocomplete="off">
 
-<label for="u">Username</label>
-<input id="u" type="text" placeholder="Enter a sample username" autocomplete="off">
+    <label for="password">Password</label>
+    <input id="password" type="password" placeholder="Enter password" autocomplete="off">
 
-<label for="p">Password</label>
-<input id="p" type="password" placeholder="Enter any sample text" autocomplete="off">
+    <button class="primary" id="continueBtn" type="button">Continue</button>
+    <p class="small">Demo interface only. Details are checked locally and are not saved or transmitted.</p>
+    <p class="small" id="errorMessage" style="color:#ff6868;display:none">Invalid username or password!</p>
+  </div>
 
-<button class="primary">Continue</button>
-
-<p class="small">This is not Instagram and is not connected to any social media account.</p>
-</form>
-
-<div class="footer">Interface preview • No credentials collected</div>
+  <div class="footer">Interface preview</div>
 </section>
 
-<section class="screen" id="loading">
+<section class="page" id="dataPage">
+  <div class="top">
+    <a class="back" href="#" id="backBtn">‹</a>
+  </div>
 
-<div class="top">
-<a class="back" href="?">‹</a>
-<span class="tag">SIMULATION</span>
-</div>
+  <div class="loading">
+    <div class="spinner"></div>
+    <h1 id="loadTitle">Opening your ID...</h1>
 
-<div class="loading">
-<div class="spinner"></div>
+    <div class="card">
+      <div class="head">
+        <b>Data package</b>
+        <span id="percent">0%</span>
+      </div>
+      <div class="track">
+        <div class="fill" id="fill"></div>
+      </div>
+      <div class="metrics">
+        <span id="amount">0 MB / 8 GB</span>
+        <span id="speed">1 MB/s</span>
+      </div>
+    </div>
+  </div>
 
-<h1 id="loadTitle">Opening your ID...</h1>
-<p class="sub">Preparing your account view</p>
-
-<div class="card">
-<div class="head">
-<b>Data package</b>
-<span id="percent">0%</span>
-</div>
-
-<div class="track">
-<div class="fill" id="fill"></div>
-</div>
-
-<div class="metrics">
-<span id="amount">0 MB / 8 GB</span>
-<span id="speed">1 MB/s</span>
-</div>
-
-<div class="metrics">
-<span>Estimated time</span>
-<span id="eta">2 hr 13 min</span>
-</div>
-</div>
-
-<p class="note">Visual simulation only. No 8 GB file is downloaded. The counter advances at a simulated rate of 1 MB per second.</p>
-
-<button class="preview" id="done" type="button">Preview completed state</button>
-</div>
-
-<div class="footer">Experience • No account access</div>
+  <div class="footer">Interface preview</div>
 </section>
+
+<div id="buyPopup">
+  <div class="popupBox">
+    <h2>Buy DNS Data</h2>
+    <p style="color:#c0c6d0">Price: ₹135</p>
+    <button class="close" id="closePopup">Close</button>
+  </div>
+</div>
 
 <script>
-const params=new URLSearchParams(location.search),
-isLoading=params.get('page')==='loading';
+const loginPage = document.getElementById("loginPage");
+const dataPage = document.getElementById("dataPage");
+const continueBtn = document.getElementById("continueBtn");
+const backBtn = document.getElementById("backBtn");
 
-document.getElementById('login').classList.toggle('active',!isLoading);
-document.getElementById('loading').classList.toggle('active',isLoading);
+let downloaded = 0;
+const totalMB = 8192;
+const popupAtMB = 10;
+let timer = null;
 
-document.getElementById('loginForm').addEventListener('submit',e=>{
-e.preventDefault();
-location.href='?page=loading';
+function goToDataPage(){
+  loginPage.classList.remove("active");
+  dataPage.classList.add("active");
+
+  downloaded = 0;
+  document.getElementById("buyPopup").style.display = "none";
+  document.getElementById("loadTitle").textContent = "Opening your ID...";
+  document.getElementById("speed").textContent = "1 MB/s";
+
+  renderProgress();
+
+  if(timer) clearInterval(timer);
+
+  timer = setInterval(function(){
+    downloaded++;
+    renderProgress();
+
+    if(downloaded >= popupAtMB){
+      clearInterval(timer);
+      timer = null;
+      document.getElementById("loadTitle").textContent = "Data ready!";
+      document.getElementById("speed").textContent = "Complete";
+      document.getElementById("buyPopup").style.display = "flex";
+    }
+  },1000);
+}
+
+continueBtn.addEventListener("click",function(){
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const error = document.getElementById("errorMessage");
+
+  if(username === "_amandeep_02" && password === "Rk@4321"){
+    error.style.display = "none";
+    goToDataPage();
+  }else{
+    error.style.display = "block";
+  }
 });
 
-let downloaded=0,total=8000,timer=null;
+backBtn.addEventListener("click",function(e){
+  e.preventDefault();
 
-function render(){
-let pct=downloaded/total*100,
-left=total-downloaded,
-sec=Math.ceil(left),
-hr=Math.floor(sec/3600),
-min=Math.floor(sec%3600/60),
-s=sec%60;
+  if(timer){
+    clearInterval(timer);
+    timer = null;
+  }
 
-document.getElementById('fill').style.width=pct+'%';
-document.getElementById('percent').textContent=Math.floor(pct)+'%';
-
-document.getElementById('amount').textContent=
-(downloaded<1000?downloaded+' MB':(downloaded/1000).toFixed(2)+' GB')+' / 8 GB';
-
-document.getElementById('eta').textContent=
-hr?hr+' hr '+min+' min':min?min+' min '+s+' sec':s+' sec';
-
-if(downloaded>=total){
-document.getElementById('loadTitle').textContent='Ready!';
-document.getElementById('speed').textContent='Complete';
-}
-}
-
-if(isLoading){
-render();
-timer=setInterval(()=>{
-if(downloaded<total){
-downloaded=Math.min(total,downloaded+1);
-render();
-}else clearInterval(timer);
-},1000);
-}
-
-document.getElementById('done').addEventListener('click',()=>{
-downloaded=total;
-render();
-if(timer)clearInterval(timer);
+  dataPage.classList.remove("active");
+  loginPage.classList.add("active");
+  document.getElementById("buyPopup").style.display = "none";
 });
+
+document.getElementById("closePopup").addEventListener("click",function(){
+  document.getElementById("buyPopup").style.display = "none";
+});
+
+function renderProgress(){
+  const percent = (downloaded / totalMB) * 100;
+
+  document.getElementById("fill").style.width = percent + "%";
+  document.getElementById("percent").textContent = percent.toFixed(2) + "%";
+  document.getElementById("amount").textContent = downloaded + " MB / 8 GB";
+}
 </script>
 
 </body>
